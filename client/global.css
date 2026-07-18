@@ -1,0 +1,204 @@
+/** @import must precede all other statements */
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * Tailwind CSS theme - Premium SaaS Dark Theme (Manthan Quest Aesthetic)
+   * Accent: #2563eb (Royal Blue)
+   * Border: #18181b (Zinc-900) or #27272a (Zinc-800)
+   * Background: #000000 (Pure Black)
+  */
+  :root {
+    --background: 0 0% 100%; /* Pure White */
+    --foreground: 240 10% 15%; /* Deep Slate (Softer than pure black) */
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 15%;
+
+    --primary: 240 5.9% 10%; /* Very dark Zinc */
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 5% 96%; /* Soft Zinc-50 */
+    --secondary-foreground: 240 5.9% 10%;
+
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --accent: 221.2 83.2% 53.3%; /* Royal Blue */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 5% 92%; /* Subtle soft border */
+    --input: 240 5% 92%;
+    --ring: 221.2 83.2% 53.3%;
+
+    --radius: 0.375rem;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 240 10% 3.9%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 221.2 83.2% 53.3%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 5.9% 90%;
+    --sidebar-ring: 221.2 83.2% 53.3%;
+
+    /* Health specific */
+    --success: 142.1 76.2% 36.3%;
+    --emergency: 346.8 77.2% 49.8%;
+  }
+
+  .dark {
+    --background: 240 10% 2%; /* Very deep Zinc/Blue */
+    --foreground: 0 0% 98%; /* Zinc-50 */
+
+    --card: 240 10% 3.9%; /* Zinc-950 (#09090b) */
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%; /* Zinc-50 */
+    --primary-foreground: 240 5.9% 10%;
+
+    --secondary: 240 3.7% 15.9%; /* Zinc-800 */
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 221.2 83.2% 53.3%; /* Royal Blue */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 346.8 77.2% 49.8%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 5.9% 10%; /* Zinc-900 (#18181b) */
+    --input: 240 5.9% 10%;
+    --ring: 221.2 83.2% 53.3%;
+
+    --sidebar-background: 240 10% 3.9%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 240 5.9% 10%;
+    --sidebar-accent: 221.2 83.2% 53.3%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 5.9% 10%;
+    --sidebar-ring: 221.2 83.2% 53.3%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+
+  :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  pre,
+  code {
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  h1 {
+    @apply font-bold tracking-tight text-foreground dark:text-white;
+  }
+
+  h2 {
+    @apply font-bold tracking-tight text-foreground dark:text-white;
+  }
+
+  h3 {
+    @apply font-semibold text-foreground dark:text-white;
+  }
+}
+
+@layer components {
+  /* Premium Dark SaaS Panel styling */
+  .glass {
+    @apply bg-zinc-950 border border-zinc-800/80 shadow-[0_4px_20px_rgba(0,0,0,0.8)];
+  }
+
+  .glass-dark {
+    @apply bg-zinc-900 border border-zinc-800/80 shadow-[0_4px_20px_rgba(0,0,0,0.8)];
+  }
+
+  .gradient-text {
+    @apply text-white;
+  }
+
+  .glow-primary {
+    @apply shadow-none;
+  }
+
+  .glow-accent {
+    @apply shadow-none;
+  }
+
+  /* Grid pattern for premium design */
+  .grid-bg {
+    background-color: hsl(var(--background));
+    background-image: radial-gradient(rgba(24, 24, 27, 0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .dark .grid-bg {
+    background-color: #000000;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  }
+
+  /* Editorial Serif Italic text formatting */
+  .serif-italic {
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-weight: 400;
+  }
+}
+
+@keyframes marquee-left {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+@keyframes marquee-right {
+  0% { transform: translate3d(-50%, 0, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+.animate-marquee-left {
+  display: flex;
+  width: max-content;
+  animation: marquee-left 40s linear infinite;
+}
+
+.animate-marquee-right {
+  display: flex;
+  width: max-content;
+  animation: marquee-right 40s linear infinite;
+}
+
