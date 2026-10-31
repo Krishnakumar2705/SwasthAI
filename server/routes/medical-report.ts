@@ -7,7 +7,7 @@ const simulateAnalysis = (fileName: string, rawText?: string) => {
   
   if (name.includes("cbc") || name.includes("blood") || name.includes("hemoglobin") || name.includes("wbc")) {
     return {
-      extractedText: "Patient Name: Manvi Kumar | Test: Complete Blood Count (CBC) | Hemoglobin: 10.2 g/dL (Normal: 12.0-16.0) | WBC Count: 11,500 /mcL (Normal: 4,000-11,000) | Platelets: 250,000 /mcL | RBC: 4.1 Million/mcL",
+      extractedText: "Patient Name: Aarav Sharma | Test: Complete Blood Count (CBC) | Hemoglobin: 10.2 g/dL (Normal: 12.0-16.0) | WBC Count: 11,500 /mcL (Normal: 4,000-11,000) | Platelets: 250,000 /mcL | RBC: 4.1 Million/mcL",
       simpleExplanation: "Your blood test shows a slightly low level of hemoglobin (which carries oxygen in your red blood cells) and a slightly high white blood cell (WBC) count, which is the body's natural defense against stress or minor infections.",
       abnormalities: JSON.stringify([
         "Low Hemoglobin (10.2 g/dL) - Indicates mild anemia",

@@ -95,12 +95,13 @@ Ensure you have [Node.js](https://nodejs.org/) (v18+) and [PNPM](https://pnpm.io
 ### 2. Installation
 ```bash
 # Clone the repository
-git clone https://github.com/Manvi0408/SwasthAII.git
-cd SwasthAII
+git clone https://github.com/Krishnakumar2705/SwasthAI.git
+cd SwasthAI
 
 # Install dependencies
 pnpm install
 ```
+
 
 ### 3. Database Initialization & Seeding
 Ensure you copy `.env.example` to `.env` and fill in your connection details (PostgreSQL port 5432 string):
@@ -133,4 +134,4 @@ The project is pre-configured for Vercel deployment via `vercel.json` and a serv
 1. Connect your GitHub repository to [Vercel](https://vercel.com).
 2. Set the build directory to standard defaults (it runs `pnpm build` and serves static files from `dist/spa`).
 3. Set up a cloud database (like **Supabase** or **Neon.tech**) and add your database URL under **DATABASE_URL** and **GEMINI_API_KEY** in Vercel's Environment Variables.
-4. Vercel automatically deploys the backend server under `/api/*` via the [api/index.ts](file:///c:/Users/Manvi/Downloads/swasthai-healthcare-platform-7b2/api/index.ts) Node function.
+4. Vercel automatically deploys the backend server under `/api/*` via the [api/index.ts](api/index.ts) Node function.

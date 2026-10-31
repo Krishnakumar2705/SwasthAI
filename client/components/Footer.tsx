@@ -102,7 +102,7 @@ export default function Footer() {
           <div className="flex items-center space-x-3 text-xs text-muted-foreground mb-4 sm:mb-0">
             <span>© 2026 SwasthAI. All rights reserved.</span>
             <a 
-              href="https://github.com/Manvi0408" 
+              href="https://github.com/Krishnakumar2705" 
               target="_blank" 
               rel="noopener noreferrer"
               aria-label="GitHub Profile"
