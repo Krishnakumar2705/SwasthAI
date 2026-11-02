@@ -1,11 +1,19 @@
 import { RequestHandler } from "express";
 import { db } from "../db.js";
+import { FALLBACK_MEDICINES } from "../fallback-data.js";
 
 export const handleGetMedicines: RequestHandler = async (req, res) => {
   const { query } = req.query;
 
   try {
-    let medicines = await db.medicine.findMany();
+    let medicines: any[] = [];
+    try {
+      medicines = await db.medicine.findMany();
+      if (medicines.length === 0) medicines = FALLBACK_MEDICINES;
+    } catch (dbError: any) {
+      console.warn("Database offline during medicine fetch, using fallback data:", dbError?.message || dbError);
+      medicines = FALLBACK_MEDICINES;
+    }
 
     if (query) {
       const q = String(query).toLowerCase();

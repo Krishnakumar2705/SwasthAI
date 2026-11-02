@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { db } from "../db.js";
+import { FALLBACK_HOSPITALS, FALLBACK_BLOOD_BANKS, FALLBACK_MEDICINES } from "../fallback-data.js";
 
 // Symptoms classification rules (same logic as triage.ts)
 const getTriageResult = (query: string) => {
@@ -185,12 +186,23 @@ export const handleSearch: RequestHandler = async (req, res) => {
   try {
     const qLower = query.toLowerCase();
     
-    // 1. Query Database models in parallel
-    const [hospitals, bloodBanks, medicines] = await Promise.all([
-      db.hospital.findMany(),
-      db.bloodBank.findMany(),
-      db.medicine.findMany()
-    ]);
+    // 1. Query Database models in parallel with offline fallback
+    let hospitals: any[] = [];
+    let bloodBanks: any[] = [];
+    let medicines: any[] = [];
+
+    try {
+      [hospitals, bloodBanks, medicines] = await Promise.all([
+        db.hospital.findMany(),
+        db.bloodBank.findMany(),
+        db.medicine.findMany()
+      ]);
+    } catch (dbError: any) {
+      console.warn("Database offline during search query, using resilient fallback data:", dbError?.message || dbError);
+      hospitals = FALLBACK_HOSPITALS;
+      bloodBanks = FALLBACK_BLOOD_BANKS;
+      medicines = FALLBACK_MEDICINES;
+    }
 
     // 2. Perform local matching (very fast for current dataset size)
     // Match hospitals

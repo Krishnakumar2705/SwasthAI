@@ -175,36 +175,44 @@ export const handleAnalyzeReport: RequestHandler = async (req, res) => {
       recommendedSpecialist = sim.recommendedSpecialist;
     }
 
-    // Save MedicalReport and ReportAnalysis to DB
-    const report = await db.medicalReport.create({
-      data: {
-        fileName,
-        fileType,
-        fileSize: parseInt(String(fileSize || 0)),
-        extractedText,
-        analysis: {
-          create: {
-            simpleExplanation,
-            abnormalities: JSON.stringify(abnormalitiesArray),
-            nextSteps: JSON.stringify(nextStepsArray),
-            recommendedSpecialist
+    // Save MedicalReport and ReportAnalysis to DB (with offline resilience)
+    let reportId = `rep-${Date.now()}`;
+    let timestamp = new Date();
+    try {
+      const report = await db.medicalReport.create({
+        data: {
+          fileName,
+          fileType,
+          fileSize: parseInt(String(fileSize || 0)),
+          extractedText,
+          analysis: {
+            create: {
+              simpleExplanation,
+              abnormalities: JSON.stringify(abnormalitiesArray),
+              nextSteps: JSON.stringify(nextStepsArray),
+              recommendedSpecialist
+            }
           }
+        },
+        include: {
+          analysis: true
         }
-      },
-      include: {
-        analysis: true
-      }
-    });
+      });
+      reportId = report.id;
+      timestamp = report.timestamp;
+    } catch (dbError: any) {
+      console.warn("Database log skipped for medical report (database offline):", dbError?.message || dbError);
+    }
 
     res.json({
-      reportId: report.id,
-      fileName: report.fileName,
-      timestamp: report.timestamp,
-      extractedText: report.extractedText,
-      simpleExplanation: report.analysis?.simpleExplanation,
+      reportId,
+      fileName,
+      timestamp,
+      extractedText,
+      simpleExplanation,
       abnormalities: abnormalitiesArray,
       nextSteps: nextStepsArray,
-      recommendedSpecialist: report.analysis?.recommendedSpecialist
+      recommendedSpecialist
     });
 
   } catch (error: any) {
@@ -237,6 +245,7 @@ export const handleGetReportHistory: RequestHandler = async (req, res) => {
 
     res.json(formattedHistory);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.warn("Could not retrieve report history (database offline):", error?.message || error);
+    res.json([]);
   }
 };

@@ -164,26 +164,34 @@ export const handleDetectInjury: RequestHandler = async (req, res) => {
       recs = template.recommendations;
     }
 
-    // Save to database
-    const analysis = await db.injuryAnalysis.create({
-      data: {
-        imageUrl: imageBase64 ? "Image Analyzed" : "File Uploaded",
-        injuryType,
-        severity,
-        confidence,
-        recommendations: JSON.stringify(recs),
-        emergencyLevel
-      }
-    });
+    // Save to database (with offline resilience)
+    let analysisId = `inj-${Date.now()}`;
+    let timestamp = new Date();
+    try {
+      const analysis = await db.injuryAnalysis.create({
+        data: {
+          imageUrl: imageBase64 ? "Image Analyzed" : "File Uploaded",
+          injuryType,
+          severity,
+          confidence,
+          recommendations: JSON.stringify(recs),
+          emergencyLevel
+        }
+      });
+      analysisId = analysis.id;
+      timestamp = analysis.timestamp;
+    } catch (dbError: any) {
+      console.warn("Database log skipped for injury assessment (database offline):", dbError?.message || dbError);
+    }
 
     res.json({
-      analysisId: analysis.id,
-      injuryType: analysis.injuryType,
-      severity: analysis.severity,
-      confidence: analysis.confidence,
+      analysisId,
+      injuryType,
+      severity,
+      confidence,
       recommendations: recs,
-      emergencyLevel: analysis.emergencyLevel,
-      timestamp: analysis.timestamp
+      emergencyLevel,
+      timestamp
     });
 
   } catch (error: any) {
@@ -206,6 +214,7 @@ export const handleGetInjuryHistory: RequestHandler = async (req, res) => {
 
     res.json(formattedHistory);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.warn("Could not retrieve injury history (database offline):", error?.message || error);
+    res.json([]);
   }
 };

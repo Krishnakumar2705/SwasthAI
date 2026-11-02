@@ -112,8 +112,8 @@ export const handleTriage: RequestHandler = async (req, res) => {
     ];
   }
 
+  // Attempt to log anonymously to DB, but never fail the triage if DB is offline/unreachable
   try {
-    // Log anonymously
     await db.aiTriageHistory.create({
       data: {
         symptoms,
@@ -123,14 +123,14 @@ export const handleTriage: RequestHandler = async (req, res) => {
         hospitalType,
       },
     });
-
-    res.json({
-      possibleConditions,
-      severity,
-      action,
-      hospitalType,
-    });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (dbError: any) {
+    console.warn("Database log skipped (database offline or unreachable):", dbError?.message || dbError);
   }
+
+  res.json({
+    possibleConditions,
+    severity,
+    action,
+    hospitalType,
+  });
 };

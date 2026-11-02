@@ -1,11 +1,19 @@
 import { RequestHandler } from "express";
 import { db } from "../db.js";
+import { FALLBACK_BLOOD_BANKS } from "../fallback-data.js";
 
 export const handleGetBloodBanks: RequestHandler = async (req, res) => {
   const { city, state, bloodGroup } = req.query;
 
   try {
-    let bloodBanks = await db.bloodBank.findMany();
+    let bloodBanks: any[] = [];
+    try {
+      bloodBanks = await db.bloodBank.findMany();
+      if (bloodBanks.length === 0) bloodBanks = FALLBACK_BLOOD_BANKS;
+    } catch (dbError: any) {
+      console.warn("Database offline during blood banks fetch, using fallback data:", dbError?.message || dbError);
+      bloodBanks = FALLBACK_BLOOD_BANKS;
+    }
 
     // 1. Filter by State
     if (state && state !== "All") {

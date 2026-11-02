@@ -1,12 +1,24 @@
 import { RequestHandler } from "express";
 import { db } from "../db.js";
+import { FALLBACK_HOSPITALS, FALLBACK_BLOOD_BANKS } from "../fallback-data.js";
 
 export const handleGetAnalytics: RequestHandler = async (req, res) => {
   try {
-    const [hospitals, bloodBanks] = await Promise.all([
-      db.hospital.findMany(),
-      db.bloodBank.findMany()
-    ]);
+    let hospitals: any[] = [];
+    let bloodBanks: any[] = [];
+
+    try {
+      [hospitals, bloodBanks] = await Promise.all([
+        db.hospital.findMany(),
+        db.bloodBank.findMany()
+      ]);
+      if (hospitals.length === 0) hospitals = FALLBACK_HOSPITALS;
+      if (bloodBanks.length === 0) bloodBanks = FALLBACK_BLOOD_BANKS;
+    } catch (dbError: any) {
+      console.warn("Database offline during analytics fetch, using fallback data:", dbError?.message || dbError);
+      hospitals = FALLBACK_HOSPITALS;
+      bloodBanks = FALLBACK_BLOOD_BANKS;
+    }
 
     // 1. State-wise Hospitals count and bed capacities
     const stateHospitalsMap: { [state: string]: { hospitalCount: number; totalBeds: number; icuBeds: number; emergencyBeds: number } } = {};

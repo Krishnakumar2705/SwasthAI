@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { db } from "../db.js";
+import { FALLBACK_HOSPITALS } from "../fallback-data.js";
 
 function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371; // km
@@ -24,18 +25,31 @@ export const handleEmergencySos: RequestHandler = async (req, res) => {
   }
 
   try {
-    // 1. Create emergency request log anonymously
-    const request = await db.emergencyRequest.create({
-      data: {
-        category: category || "General Emergency",
-        lat: parseFloat(lat),
-        lng: parseFloat(lng),
-        status: "RESPONDING",
-      },
-    });
+    // 1. Create emergency request log anonymously (with fallback)
+    let requestId = `sos-${Date.now()}`;
+    try {
+      const request = await db.emergencyRequest.create({
+        data: {
+          category: category || "General Emergency",
+          lat: parseFloat(lat),
+          lng: parseFloat(lng),
+          status: "RESPONDING",
+        },
+      });
+      requestId = request.id;
+    } catch (dbError: any) {
+      console.warn("Database log skipped for SOS (database offline):", dbError?.message || dbError);
+    }
 
-    // 2. Query nearest hospitals
-    const hospitals = await db.hospital.findMany();
+    // 2. Query nearest hospitals (with fallback)
+    let hospitals: any[] = [];
+    try {
+      hospitals = await db.hospital.findMany();
+      if (hospitals.length === 0) hospitals = FALLBACK_HOSPITALS;
+    } catch (dbError: any) {
+      console.warn("Database offline during SOS routing, using fallback hospitals:", dbError?.message || dbError);
+      hospitals = FALLBACK_HOSPITALS;
+    }
     let targetType = "Trauma Center";
 
     // Adjust target hospital type based on emergency category
@@ -78,8 +92,8 @@ export const handleEmergencySos: RequestHandler = async (req, res) => {
 
     res.json({
       message: "SOS Emergency Dispatched",
-      requestId: request.id,
-      category: request.category,
+      requestId: requestId,
+      category: category || "General Emergency",
       nearestHospital: closestHospital,
       instructions,
       dispatchContact: "108",

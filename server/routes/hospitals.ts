@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { db } from "../db.js";
+import { FALLBACK_HOSPITALS } from "../fallback-data.js";
 
 function getHaversineDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371; // Earth radius in km
@@ -19,8 +20,15 @@ export const handleGetHospitals: RequestHandler = async (req, res) => {
   const { query, type, lat, lng } = req.query;
 
   try {
-    // 1. Fetch hospitals from DB
-    let hospitals = await db.hospital.findMany();
+    // 1. Fetch hospitals from DB with offline fallback
+    let hospitals: any[] = [];
+    try {
+      hospitals = await db.hospital.findMany();
+      if (hospitals.length === 0) hospitals = FALLBACK_HOSPITALS;
+    } catch (dbError: any) {
+      console.warn("Database offline during hospital fetch, using fallback data:", dbError?.message || dbError);
+      hospitals = FALLBACK_HOSPITALS;
+    }
 
     // 2. Filter by search query
     if (query) {

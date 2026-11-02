@@ -216,7 +216,7 @@ export default function Hero3DCanvas() {
       <div className="absolute inset-0 bg-slate-950 -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 animate-pulse" />
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[120px] mix-blend-screen animate-pulse duration-5000" />
-        <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-accent/10 rounded-full blur-[140px] mix-blend-screen animate-pulse duration-[7000ms]" />
+        <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-accent/10 rounded-full blur-[140px] mix-blend-screen animate-pulse" style={{ animationDuration: "7000ms" }} />
       </div>
     );
   }
