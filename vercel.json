@@ -1,7 +1,7 @@
 {
   "buildCommand": "npm run build:client && npx prisma generate",
   "outputDirectory": "dist/spa",
-  "installCommand": "npm install --ignore-scripts",
+  "installCommand": "npm install",
   "framework": null,
   "routes": [
     {
