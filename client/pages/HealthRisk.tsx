@@ -109,6 +109,7 @@ export default function HealthRisk() {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [result, setResult] = useState<AssessmentResult | null>(null);
+  const [mlError, setMlError] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showHistory, setShowHistory] = useState<boolean>(false);
 
@@ -146,7 +147,8 @@ export default function HealthRisk() {
         Age: Math.min(100, Math.max(18, age)),
       };
 
-      let mlDiabetesRisk = 0;
+      let mlDiabetesRisk: number | null = null;
+      setMlError(null);
       try {
         const mlRes = await fetch("/api/risk", {
           method: "POST",
@@ -156,9 +158,12 @@ export default function HealthRisk() {
         if (mlRes.ok) {
           const mlData: RiskResponse = await mlRes.json();
           mlDiabetesRisk = mlData.diabetesRisk;
+        } else {
+          setMlError("Could not compute diabetes risk. Try again.");
         }
       } catch (mlErr) {
-        console.warn("Could not query /api/risk directly:", mlErr);
+        console.warn("Could not query /api/risk:", mlErr);
+        setMlError("Could not compute diabetes risk. Try again.");
       }
 
       // 2. Fetch clinical recommendations & rule-based cardiovascular scores
@@ -181,20 +186,21 @@ export default function HealthRisk() {
       if (res.ok) {
         const data = await res.json();
         // Override with the trained logistic regression model result
-        data.diabetesRisk = mlDiabetesRisk;
+        data.diabetesRisk = mlDiabetesRisk ?? 0;
         setResult(data);
         toast.success("Health risk assessment complete!");
         fetchHistory(); // refresh history
       } else {
         // Fallback with ML result and basic guidance
+        const riskVal = mlDiabetesRisk ?? 0;
         setResult({
           assessmentId: `risk-${Date.now()}`,
           bmi: bmiCalc,
-          diabetesRisk: mlDiabetesRisk,
+          diabetesRisk: riskVal,
           heartDiseaseRisk: bpNumeric > 130 ? 35 : 15,
           strokeRisk: bpNumeric > 140 ? 30 : 10,
-          riskScore: mlDiabetesRisk,
-          riskCategory: mlDiabetesRisk > 50 ? "High" : mlDiabetesRisk > 25 ? "Medium" : "Low",
+          riskScore: riskVal,
+          riskCategory: riskVal > 50 ? "High" : riskVal > 25 ? "Medium" : "Low",
           recommendations: [
             "Monitor fasting blood glucose levels regularly.",
             "Maintain moderate daily physical activity (30 minutes).",
@@ -437,6 +443,13 @@ export default function HealthRisk() {
                     <div className="p-3 bg-muted/80 border border-border rounded-lg text-center text-xs font-semibold text-muted-foreground tracking-wide">
                       Educational estimate. Not a medical diagnosis.
                     </div>
+
+                    {/* ML error banner */}
+                    {mlError && (
+                      <div className="p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/60 rounded-lg text-center text-xs font-semibold text-red-600 dark:text-red-400 tracking-wide">
+                        {mlError}
+                      </div>
+                    )}
 
                     {/* Score summary panel with Circular Progress */}
                     <div className="bg-card border border-border rounded-lg p-6 shadow-2xl relative overflow-hidden">

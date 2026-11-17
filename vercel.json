@@ -3,6 +3,11 @@
   "outputDirectory": "dist/spa",
   "installCommand": "pnpm install",
   "framework": null,
+  "functions": {
+    "api/**/*.ts": {
+      "includeFiles": "server/**"
+    }
+  },
   "routes": [
     {
       "src": "/api/(.*)",
