@@ -10,3 +10,16 @@
 export interface DemoResponse {
   message: string;
 }
+
+export interface RiskRequest {
+  [key: string]: number;
+  Glucose: number;
+  BloodPressure: number;
+  BMI: number;
+  Age: number;
+}
+
+export interface RiskResponse {
+  diabetesRisk: number;
+}
+

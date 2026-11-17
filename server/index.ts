@@ -20,6 +20,7 @@ import { handleCreateAssessment, handleGetAssessmentHistory } from "./routes/hea
 import { handleAnalyzeReport, handleGetReportHistory } from "./routes/medical-report.js";
 import { handleDetectInjury, handleGetInjuryHistory } from "./routes/injury.js";
 import { handleGetAnalytics } from "./routes/analytics.js";
+import { handleRisk } from "./routes/risk.js";
 
 export function createServer() {
   const app = express();
@@ -68,6 +69,9 @@ export function createServer() {
 
   // Healthcare Analytics routes
   app.get("/api/healthcare-analytics", handleGetAnalytics);
+
+  // ML Risk Prediction route
+  app.post("/api/risk", handleRisk);
 
 
   // Global JSON Error Handler (Must be registered last)
